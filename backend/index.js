@@ -55,7 +55,11 @@ app.get("/", (req, res) => {
 // Send email
 app.post("/sendemail", async (req, res) => {
 
+     console.log("SEND EMAIL API CALLED")
+
     try {
+
+       
 
         const { subject, emailbody, emailList } = req.body
 
