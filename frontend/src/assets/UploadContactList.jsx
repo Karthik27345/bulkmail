@@ -127,7 +127,7 @@ setEmailList(totalemail)
         <div className="flex items-center gap-4">
           <FiCheckCircle className="text-2xl text-green-500" />
 
-          <FiX className="cursor-pointer text-xl text-slate-500 hover:text-red-500" />
+          <FiX className="cursor-pointer text-xl text-slate-500 hover:text-red-500"/>
         </div>
       </div>
 

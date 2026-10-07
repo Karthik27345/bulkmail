@@ -13,7 +13,7 @@ function SendEmail() {
   const send = ()=>{
 
     setstatus(true)
-  axios.post("http://localhost:8000/sendemail",{subject:subject,emailbody:emailbody,emailList:emailList}).then((data)=>{
+  axios.post("https://bulkmail-backend-dmvu.onrender.com/sendemail",{subject:subject,emailbody:emailbody,emailList:emailList}).then((data)=>{
   if(data.data===true){
     setstatus(false)
 toast.success("Email sent Succesfully")

@@ -5,7 +5,7 @@ import {FiMoon, FiChevronDown, FiSun} from "react-icons/fi"
 const Navbar = ({darkMode,setDarkMode}) => {
   return (
     <div className='flex justify-between items-center bg-white dark:bg-slate-900'>
-<div className='m-2 flex gap-2 '>
+<div className='m-2 flex gap-2'>
 
 <FaPaperPlane className='text-blue-500 text-5xl'/>
 
