@@ -88,7 +88,7 @@ https://bulkmail-amber.vercel.app/
 
 Clone the GitHub repository:
 
-    git clone
+    git clone https://github.com/Karthik27345/bulkmail.git
 
 Go to the project folder:
 
