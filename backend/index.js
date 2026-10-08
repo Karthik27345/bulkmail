@@ -2,10 +2,12 @@ require("dotenv").config()
 
 const express = require("express")
 const cors = require("cors")
-const nodemailer = require("nodemailer")
+const{ Resend } = require("resend")
 const mongoose = require("mongoose")
 
 const app = express()
+
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 const PORT = process.env.PORT || 8000
 
@@ -55,18 +57,15 @@ app.get("/", (req, res) => {
 // Send email
 app.post("/sendemail", async (req, res) => {
 
-     console.log("SEND EMAIL API CALLED")
+    console.log("SEND EMAIL API CALLED")
 
     try {
-
-       
 
         const { subject, emailbody, emailList } = req.body
 
         console.log("Subject:", subject)
         console.log("Email body:", emailbody)
         console.log("Email list:", emailList)
-
 
         // Check email list
         if (!emailList || emailList.length === 0) {
@@ -75,66 +74,16 @@ app.post("/sendemail", async (req, res) => {
 
         }
 
-
-        // Get Gmail credentials from MongoDB
-        const data = await credentials.find()
-
-        console.log("Credentials received from MongoDB")
-
-
-        if (!data || data.length === 0) {
-
-            console.log("No credentials found in MongoDB")
-
-            return res.status(500).send(false)
-
-        }
-
-
-        const emailUser = data[0].user
-        const emailPassword = data[0].pass
-
-
-        // Check credentials
-        if (!emailUser || !emailPassword) {
-
-            console.log("Email credentials are missing")
-
-            return res.status(500).send(false)
-
-        }
-
-
-        // Create transporter
-        const transporter = nodemailer.createTransport({
-
-            service: "gmail",
-
-            auth: {
-                user: emailUser,
-                pass: emailPassword
-            }
-
-        })
-
-
-        console.log("Checking Gmail connection...")
-
-
-        // Check Gmail connection
-        await transporter.verify()
-
-        console.log("Gmail connection successful")
-
+        console.log("Sending emails through Resend...")
 
         // Send emails
         for (let i = 0; i < emailList.length; i++) {
 
-            await transporter.sendMail({
+            const { data, error } = await resend.emails.send({
 
-                from: emailUser,
+                from: "onboarding@resend.dev",
 
-                to: emailList[i],
+                to: [emailList[i]],
 
                 subject: subject,
 
@@ -142,15 +91,21 @@ app.post("/sendemail", async (req, res) => {
 
             })
 
+            if (error) {
+
+                console.log("Resend error:", error)
+
+                return res.status(500).send(false)
+
+            }
+
             console.log("Email sent to:", emailList[i])
 
         }
 
-
         console.log("All emails sent successfully")
 
         res.send(true)
-
 
     } catch (error) {
 
