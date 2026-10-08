@@ -9,6 +9,8 @@ const UploadContactList = () => {
 
  const{emailList,setEmailList} = useContext(Emailcontext)
 
+ const [showdiv,setshowdiv] = useState(true)
+
  const[filename,setfilename] = useState("")
 
   const handleFile = (event)=>{
@@ -108,7 +110,7 @@ setEmailList(totalemail)
       </div>
 
       {/* Uploaded File */}
-      <div className="mt-4 flex items-center justify-between rounded-xl border border-slate-200 bg-white p-3 dark:bg-slate-800">
+   { showdiv && <div className="mt-4 flex items-center justify-between rounded-xl border border-slate-200 bg-white p-3 dark:bg-slate-800">
 
         <div className="flex items-center gap-3">
          
@@ -125,12 +127,15 @@ setEmailList(totalemail)
         </div>
 
         <div className="flex items-center gap-4">
-          <FiCheckCircle className="text-2xl text-green-500" />
+      <div>
 
-          <FiX className="cursor-pointer text-xl text-slate-500 hover:text-red-500"/>
-        </div>
+        {emailList.length>1 &&     <FiCheckCircle className="text-2xl text-green-500" />}
       </div>
 
+          <FiX className="cursor-pointer text-xl text-slate-500 hover:text-red-500" onClick={()=>{setshowdiv(false)}}/>
+        </div>
+      </div>
+}
     
       
 

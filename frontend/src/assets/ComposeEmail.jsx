@@ -49,34 +49,10 @@ const ComposeEmail = () => {
           placeholder="Subject"
         />
 
-        <button className="whitespace-nowrap font-medium text-slate-700 dark:text-white">
-          Insert Field
-          <span className="ml-2">⌄</span>
-        </button>
+     
       </div>
 
-      <div className="flex flex-wrap items-center gap-5 border-b border-slate-200 px-3 py-3 dark:text-white">
-
-        <button className="font-medium">
-          Normal
-          <span className="ml-2">⌄</span>
-        </button>
-
-        <FiBold className="cursor-pointer text-xl" />
-        <FiItalic className="cursor-pointer text-xl" />
-        <FiUnderline className="cursor-pointer text-xl" />
-
-        <FiList className="cursor-pointer text-xl" />
-        <FiAlignLeft className="cursor-pointer text-xl" />
-
-        <FiLink className="cursor-pointer text-xl" />
-        <FiImage className="cursor-pointer text-xl" />
-
-        <span className="cursor-pointer text-lg font-bold">
-          {"{}"}
-        </span>
-
-      </div>
+     
 
       <textarea className="w-full h-[300px] border-2 rounded-xl p-3 bg-white text-black dark:bg-slate-700 dark:text-white" value={emailbody} onChange={(e)=>{
         setEmailBody(e.target.value) 
