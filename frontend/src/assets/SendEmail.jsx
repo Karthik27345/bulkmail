@@ -10,49 +10,46 @@ function SendEmail() {
 
   const [status, setstatus] = useState(false);
 
-  const send = async () => {
+  const send = () => {
 
     setstatus(true);
 
-    try {
+    axios.post(
+      "http://localhost:8000/sendemail",
+      {
+        subject: subject,
+        emailbody: emailbody,
+        emailList: emailList
+      }
+    )
+    .then((response) => {
 
-      const response = await axios.post(
-        "https://bulkmail-vz2i.onrender.com/sendemail",
-        {
-          subject: subject,
-          emailbody: emailbody,
-          emailList: emailList
-        },
-        {
-          timeout: 30000
-        }
-      );
+      if (response.data == true) {
 
-      console.log("Backend response:", response.data);
-
-      if (response.data === true) {
+        setstatus(false);
         toast.success("Email sent successfully");
+
       } else {
+
         toast.error("Failed to send email");
+        setstatus(false);
+
       }
 
-    } catch (err) {
+    })
+    .catch((error) => {
 
-      console.log("Send email error:", err);
-
+      console.log(error);
       toast.error("Failed to send email");
-
-    } finally {
-
       setstatus(false);
 
-    }
+    });
+
   };
 
   return (
     <div className="w-full min-w-0 bg-white rounded-2xl p-5 shadow-sm dark:bg-slate-900">
 
-      {/* Header */}
       <div className="flex items-center justify-between mb-5">
 
         <div className="flex items-center gap-3">
@@ -69,7 +66,6 @@ function SendEmail() {
 
       </div>
 
-      {/* Send Button */}
       <button
         className="w-full min-w-0 px-4 py-4 flex items-center justify-center gap-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold text-lg rounded-xl"
         onClick={send}

@@ -1,119 +1,114 @@
 require("dotenv").config()
 
+
 const express = require("express")
+
+
 const cors = require("cors")
-const{ Resend } = require("resend")
 const mongoose = require("mongoose")
+const nodemailer = require("nodemailer")
+
+
+
+
 
 const app = express()
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
-const PORT = process.env.PORT || 8000
-
-app.use(express.json())
 app.use(cors())
 
-
-// MongoDB connection
-mongoose.connect(process.env.MONGO_URL)
-    .then(() => {
-
-        console.log("Database is connected")
-
-        // Start server only after MongoDB connection
-        app.listen(PORT, () => {
-            console.log(`Server started on port ${PORT}`)
-        })
-
-    })
-    .catch((error) => {
-
-        console.log("Database connection error:")
-        console.log(error)
-
-    })
+app.use(express.json())
 
 
-// Credentials collection
-const credentialsSchema = new mongoose.Schema({
-    user: String,
-    pass: String
-})
+const PORT = 8000
 
-const credentials = mongoose.model(
-    "credentials",
-    credentialsSchema,
-    "bulkmail"
-)
-
-
-// Test route
-app.get("/", (req, res) => {
-    res.send("BulkMail backend is running")
+app.listen(PORT,()=>{
+   console.log("Server started on",PORT)
 })
 
 
-// Send email
-app.post("/sendemail", async (req, res) => {
 
-    console.log("SEND EMAIL API CALLED")
+mongoose.connect(process.env.MONGO_URL).then(()=>{
+    console.log("database is connected")
+}).catch(()=>{"database is not connected"})
 
-    try {
 
-        const { subject, emailbody, emailList } = req.body
+const credentials = mongoose.model("credentials",{},"bulkmail")
 
-        console.log("Subject:", subject)
-        console.log("Email body:", emailbody)
-        console.log("Email list:", emailList)
+app.post("/sendemail",(req,res)=>{
+    const subject = req.body.subject 
+    const emailbody = req.body.emailbody 
+    const emailList = req.body.emailList
 
-        // Check email list
-        if (!emailList || emailList.length === 0) {
+credentials.find().then((data)=>{
 
-            return res.status(400).send(false)
 
+const transporter = nodemailer.createTransport({
+    service:"gmail",
+
+    auth:{
+        user: data[0].toJSON().user,
+        pass: data[0].toJSON().pass
+    }
+
+   
+    
+})
+
+
+new Promise (  async (resolve,reject)=>{
+
+
+
+ 
+   try {
+
+        for(let i=0;i<emailList.length;i++){
+
+         await transporter.sendMail({
+
+           from: data[0].toJSON().user,
+            to:emailList[i],
+            subject:subject,
+            text:emailbody
+         }
+
+            )
+
+
+            
+        console.log("Email Sent to",emailList[i])
         }
 
-        console.log("Sending emails through Resend...")
 
-        // Send emails
-        for (let i = 0; i < emailList.length; i++) {
 
-            const { data, error } = await resend.emails.send({
 
-                from: "onboarding@resend.dev",
-
-                to: [emailList[i]],
-
-                subject: subject,
-
-                text: emailbody
-
-            })
-
-            if (error) {
-
-                console.log("Resend error:", error)
-
-                return res.status(500).send(false)
-
-            }
-
-            console.log("Email sent to:", emailList[i])
-
-        }
-
-        console.log("All emails sent successfully")
-
-        res.send(true)
-
-    } catch (error) {
-
-        console.log("EMAIL ERROR:")
-        console.log(error)
-
-        res.status(500).send(false)
+resolve("success")
 
     }
 
+
+    catch{
+
+        reject("failed")
+        
+
+    }
+
+
+
+
+
+  
+}).then(()=>{res.send(true)}).catch(()=>{
+    res.send(false)
+})
+
+
+
+}).catch((error)=>{
+    console.log(error)
+    res.status(500).send(false)
+})
+
+    
 })
